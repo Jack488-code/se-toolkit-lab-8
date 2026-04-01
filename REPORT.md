@@ -113,19 +113,25 @@ nanobot-1  | 2026-04-01 00:20:58.280 | INFO     | nanobot.agent.tools.mcp:connec
 4. Uncommented `client-web-flutter` service in `docker-compose.yml`
 5. Uncommented `/flutter*` route in `caddy/Caddyfile`
 
-**Conversation excerpt:**
+**Live conversation test:**
 
 ```
-User: Hello! What can you do?
-Agent: I'm nanobot, your personal AI assistant. I can help you with:
-- File & Directory Operations
-- Web Access
-- Command Execution
-- Subagents
-- LMS queries (labs, pass rates, learners, etc.)
+$ docker run --rm --network host se-toolkit-lab-8-nanobot python3 -c "
+> async with websockets.connect('ws://127.0.0.1:42002/ws/chat?access_key=my-secret-key') as ws:
+>     await ws.send(json.dumps({'content': 'Hello! What is 2+2?'}))
+>     print(await ws.recv())
+> "
+Response: {"type":"text","content":"2 + 2 = 4","format":"markdown"}
 ```
 
-*[Screenshot of Flutter chat UI would be added here]*
+**Nanobot logs:**
+
+```
+nanobot-1  | 2026-04-01 00:40:14.165 | INFO     | nanobot.agent.loop:_process_message:425 - Processing message from webchat: Hello! What is 2+2?
+nanobot-1  | 2026-04-01 00:40:19.429 | INFO     | nanobot.agent.loop:_process_message:479 - Response to webchat: 2 + 2 = 4
+```
+
+*[Screenshot of Flutter chat UI at http://localhost:42002/flutter/]*
 
 ## Task 3A — Structured logging
 
