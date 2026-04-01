@@ -78,11 +78,54 @@ The skill prompt teaches the agent to call `lms_labs` first when a lab parameter
 
 ## Task 2A — Deployed agent
 
-<!-- Paste a short nanobot startup log excerpt showing the gateway started inside Docker -->
+**Nanobot gateway startup log excerpt:**
+
+```
+nanobot-1  | 🐈 Starting nanobot gateway version 0.1.4.post5 on port 18790...
+nanobot-1  | 2026-04-01 00:20:56.339 | INFO     | nanobot.channels.manager:_init_channels:58 - WebChat channel enabled
+nanobot-1  | ✓ Channels enabled: webchat
+nanobot-1  | ✓ Heartbeat: every 1800s
+nanobot-1  | 2026-04-01 00:20:56.795 | INFO     | nanobot.channels.manager:start_all:91 - Starting webchat channel...
+nanobot-1  | 2026-04-01 00:20:58.279 | DEBUG    | nanobot.agent.tools.mcp:connect_mcp_servers:226 - MCP: registered tool 'mcp_lms_lms_health' from server 'lms'
+nanobot-1  | 2026-04-01 00:20:58.280 | INFO     | nanobot.agent.tools.mcp:connect_mcp_servers:246 - MCP server 'lms': connected, 9 tools registered
+```
+
+**Files modified:**
+
+- `nanobot/Dockerfile` — Multi-stage build with nanobot-ai installed
+- `nanobot/entrypoint.py` — Resolves environment variables into config at runtime
+- `docker-compose.yml` — Added nanobot service with volumes for mcp and nanobot-websocket-channel
+- `caddy/Caddyfile` — Added `handle /ws/chat` route proxying to nanobot
+
+---
 
 ## Task 2B — Web client
 
-<!-- Screenshot of a conversation with the agent in the Flutter web app -->
+**WebSocket endpoint:** `http://localhost:42002/ws/chat?access_key=YOUR_NANOBOT_ACCESS_KEY`
+
+**Flutter UI:** `http://localhost:42002/flutter/`
+
+**Setup steps:**
+
+1. Cloned `nanobot-websocket-channel` submodule
+2. Installed `nanobot-webchat` and `mcp-webchat` packages
+3. Enabled webchat channel in `nanobot/config.json`
+4. Uncommented `client-web-flutter` service in `docker-compose.yml`
+5. Uncommented `/flutter*` route in `caddy/Caddyfile`
+
+**Conversation excerpt:**
+
+```
+User: Hello! What can you do?
+Agent: I'm nanobot, your personal AI assistant. I can help you with:
+- File & Directory Operations
+- Web Access
+- Command Execution
+- Subagents
+- LMS queries (labs, pass rates, learners, etc.)
+```
+
+*[Screenshot of Flutter chat UI would be added here]*
 
 ## Task 3A — Structured logging
 
