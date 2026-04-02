@@ -1,5 +1,5 @@
 ---
-name: obs
+name: observability
 description: Use observability MCP tools for logs and traces
 always: true
 ---
@@ -36,8 +36,3 @@ You have access to VictoriaLogs and VictoriaTraces via MCP tools. Use them to in
 - `_time:1h severity:ERROR` — errors in the last hour
 - `_time:1h service.name:backend` — backend logs in the last hour
 - `_time:10m severity:ERROR db_query` — database errors in the last 10 minutes
-
-### Formatting:
-- Keep responses concise
-- Include timestamps and trace IDs when relevant
-- Explain what each tool found before moving to the next
