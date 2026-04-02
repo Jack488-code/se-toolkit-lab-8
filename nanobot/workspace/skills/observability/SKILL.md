@@ -1,38 +1,29 @@
 ---
 name: observability
-description: Use observability MCP tools for logs and traces
+description: Use observability tools to investigate errors and diagnose failures
 always: true
 ---
 
 # Observability Skill
 
-You have access to VictoriaLogs and VictoriaTraces via MCP tools. Use them to investigate system health and failures.
+## When user asks "What went wrong?" or "Check system health":
 
-## Available Tools
+1. **Call logs_error_count** for the last hour to see if there are errors
+2. **Call logs_search** with query "_time:1h severity:ERROR" to get error details
+3. **Extract trace_id** from the error logs
+4. **Call traces_get** with the trace_id to see the full failure trace
+5. **Summarize findings**: mention the service, the error, and the trace evidence
 
-- `mcp_obs_logs_search` — Search logs by LogsQL query
-- `mcp_obs_logs_error_count` — Count errors per service over a time window
-- `mcp_obs_traces_search` — Search traces by service name
-- `mcp_obs_trace_details` — Get full span hierarchy for a trace
+## When user asks about specific errors:
 
-## Strategy Rules
+- Use logs_search with the specific query
+- Extract trace_id if available
+- Call traces_get for full context
+- Summarize concisely
 
-### When user asks about errors or failures:
-1. First call `mcp_obs_logs_error_count(hours=1)` to see if there are errors
-2. If errors exist, call `mcp_obs_logs_search(query="_time:1h severity:ERROR", limit=10)` to get details
-3. If the user asks "what went wrong?" or "diagnose the failure":
-   - Search logs for ERROR entries
-   - Extract the `trace_id` from error logs
-   - Call `mcp_obs_trace_details(trace_id=<id>)` to see the full span hierarchy
-   - Identify which service/span caused the failure
-   - Report the root cause clearly
+## Response format:
 
-### When user asks about system health:
-1. Call `mcp_obs_logs_error_count(hours=1)` to check for recent errors
-2. Call `mcp_obs_traces_search(service="Learning Management Service", limit=5)` to see recent traces
-3. Report: "System is healthy" or "Found X errors in the last hour: [details]"
-
-### Query examples:
-- `_time:1h severity:ERROR` — errors in the last hour
-- `_time:1h service.name:backend` — backend logs in the last hour
-- `_time:10m severity:ERROR db_query` — database errors in the last 10 minutes
+- Start with the conclusion (what failed)
+- Cite log evidence (error message, timestamp)
+- Cite trace evidence (trace_id, failing span)
+- Name the affected service and operation
